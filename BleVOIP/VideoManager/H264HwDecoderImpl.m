@@ -82,6 +82,41 @@ static void didDecompress( void *decompressionOutputRefCon, void *sourceFrameRef
     return YES;
 }
 
+- (void)resetH264Decoder
+{
+    if(_deocderSession) {
+        VTDecompressionSessionInvalidate(_deocderSession);
+        CFRelease(_deocderSession);
+        _deocderSession = NULL;
+    }
+    CFDictionaryRef attrs = NULL;
+    const void *keys[] = { kCVPixelBufferPixelFormatTypeKey };
+    //kCVPixelFormatType_420YpCbCr8Planar is YUV420
+    //kCVPixelFormatType_420YpCbCr8BiPlanarFullRange is NV12
+    uint32_t v = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange;
+    const void *values[] = { CFNumberCreate(NULL, kCFNumberSInt32Type, &v) };
+    attrs = CFDictionaryCreate(NULL, keys, values, 1, NULL, NULL);
+    
+    VTDecompressionOutputCallbackRecord callBackRecord;
+    callBackRecord.decompressionOutputCallback = didDecompress;
+    callBackRecord.decompressionOutputRefCon = NULL;
+    if(VTDecompressionSessionCanAcceptFormatDescription(_deocderSession, _decoderFormatDescription))
+    {
+        NSLog(@"yes");
+    }
+    
+    OSStatus status = VTDecompressionSessionCreate(kCFAllocatorSystemDefault,
+                                                   _decoderFormatDescription,
+                                                   NULL, attrs,
+                                                   &callBackRecord,
+                                                   &_deocderSession);
+    if (status != noErr) {
+        NSLog(@"resetH264Decoder failed");
+    }
+    
+    CFRelease(attrs);
+}
+
 - (CVPixelBufferRef)decode:(uint8_t *)frame withSize:(uint32_t)frameSize
 {
     CVPixelBufferRef outputPixelBuffer = NULL;
@@ -115,9 +150,12 @@ static void didDecompress( void *decompressionOutputRefCon, void *sourceFrameRef
 
             if(decodeStatus == kVTInvalidSessionErr) {
                 NSLog(@"IOS8VT: Invalid session, reset decoder session");
-            } else if(decodeStatus == kVTVideoDecoderBadDataErr) {
+                [self resetH264Decoder];
+            }
+            else if(decodeStatus == kVTVideoDecoderBadDataErr) {
                 NSLog(@"IOS8VT: decode failed status=%d(Bad data)", (int)decodeStatus);
-            } else if(decodeStatus != noErr) {
+            }
+            else if(decodeStatus != noErr) {
                 NSLog(@"IOS8VT: decode failed status=%d", (int)decodeStatus);
             }
             CFRelease(sampleBuffer);

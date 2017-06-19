@@ -52,10 +52,13 @@
         [videoData setupCamera];
     }];
     
-    CGFloat x = 10;
-    playLayer = [[AAPLEAGLLayer alloc] initWithFrame:CGRectMake(10, 220, Screen_Width-x*2, 160)];
+    CGFloat x = 60;
+    CGFloat w = Screen_Width-x*2;
+    playLayer = [[AAPLEAGLLayer alloc] initWithFrame:CGRectMake(x, 150, w, w*300/160)];
     playLayer.backgroundColor = [UIColor clearColor].CGColor;
     [self.view.layer addSublayer:playLayer];
+    
+    self.navigationItem.rightBarButtonItem = [CTB BarButtonWithTitle:@"切换" target:self tag:1];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -154,6 +157,11 @@
 #pragma mark - voice delegate
 - (void)covertedData:(NSData *)data
 {
+    if (self.roleType == RoleTypeSelf) {
+        //测试使用，直接过来
+        [self encodeData:data];
+        return;
+    }
     //发送数据
     [self.manager sendData:data];
 }
@@ -175,19 +183,28 @@
         int frameHeight = (int)CVPixelBufferGetHeight(_pixelBuffer);
         
         CGRect frame = playLayer.frame;
-        frame.size.width = frameWidth;
-        frame.size.height = frameHeight;
-        frame.origin.x = (Screen_Width-frameWidth)/2;
         
-        playLayer.frame = frame;
+        CGFloat rHeight = frameHeight * frame.size.width / frameWidth;
+        if (frame.size.height != rHeight) {
+            frame.size.height = rHeight;
+            //playLayer.frame = frame;
+        }
         
         CVPixelBufferRelease(imageBuffer);
         CVPixelBufferRelease(_pixelBuffer);
     }
 }
 
+- (void)ButtonEvents:(UIButton *)button
+{
+    if (button.tag == 1) {
+        [videoData swapFrontAndBackCameras];
+    }
+}
+
 - (void)dealloc
 {
+    [videoData stopRunning];
     NSLog(@"%s",__func__);
 }
 

@@ -7,6 +7,7 @@
 //
 
 #import "BNVideoData.h"
+#import "CTB.h"
 
 @implementation BNVideoData
 
@@ -20,11 +21,28 @@
     // Configure the session to produce lower resolution video frames, if your
     // processing algorithm can cope. We'll specify medium quality for the
     // chosen device.
-    _session.sessionPreset = AVCaptureSessionPresetMedium;
+    _session.sessionPreset = AVCaptureSessionPreset640x480;
     
     // Find a suitable AVCaptureDevice
     AVCaptureDevice *device = [AVCaptureDevice
                                defaultDeviceWithMediaType:AVMediaTypeVideo];
+    
+    //属性设置帧速率
+    CMTime frameDuration = CMTimeMake(1, 10);
+    NSArray *supportedFrameRateRanges = [device.activeFormat videoSupportedFrameRateRanges];
+    BOOL frameRateSupported = NO;
+    for (AVFrameRateRange *range in supportedFrameRateRanges) {
+        if (CMTIME_COMPARE_INLINE(frameDuration, >=, range.minFrameDuration) &&
+            CMTIME_COMPARE_INLINE(frameDuration, <=, range.maxFrameDuration)) {
+            frameRateSupported = YES;
+        }
+    }
+    
+    if (frameRateSupported && [device lockForConfiguration:&error]) {
+        device.activeVideoMinFrameDuration = frameDuration;
+        device.activeVideoMaxFrameDuration = frameDuration;
+        [device unlockForConfiguration];
+    }
     
     // Create a device input with the device and add it to the session.
     _input = [AVCaptureDeviceInput deviceInputWithDevice:device
@@ -48,14 +66,63 @@
                                 forKey:(id)kCVPixelBufferPixelFormatTypeKey];
     
     
+    AVCaptureVideoStabilizationMode stabilizationMode = AVCaptureVideoStabilizationModeAuto;
+    if ([device.activeFormat isVideoStabilizationModeSupported:stabilizationMode]) {
+        AVCaptureConnection *connection = [_output connectionWithMediaType:AVMediaTypeVideo];
+        [connection setPreferredVideoStabilizationMode:stabilizationMode];
+    }
+    
     // If you wish to cap the frame rate to a known value, such as 15 fps, set
     // minFrameDuration.
-    _output.minFrameDuration = CMTimeMake(1, 10);
+    //_output.minFrameDuration = CMTimeMake(1, 10);
     
     // Start the session running to start the flow of data
     
     // Assign session to an ivar.
     [self setSession:_session];
+}
+
+- (AVCaptureDevice *)cameraWithPosition:(AVCaptureDevicePosition)position
+{
+    NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+    for ( AVCaptureDevice *device in devices ) {
+        if ( device.position == position ) {
+            return device;
+        }
+    }
+    
+    return nil;
+}
+
+- (void)swapFrontAndBackCameras
+{
+    // Assume the session is already running
+    
+    NSArray *inputs = self.session.inputs;
+    for ( AVCaptureDeviceInput *input in inputs ) {
+        AVCaptureDevice *device = input.device;
+        if ( [device hasMediaType:AVMediaTypeVideo] ) {
+            AVCaptureDevicePosition position = device.position;
+            AVCaptureDevice *newCamera = nil;
+            AVCaptureDeviceInput *newInput = nil;
+            
+            if (position == AVCaptureDevicePositionFront)
+                newCamera = [self cameraWithPosition:AVCaptureDevicePositionBack];
+            else
+                newCamera = [self cameraWithPosition:AVCaptureDevicePositionFront];
+            newInput = [AVCaptureDeviceInput deviceInputWithDevice:newCamera error:nil];
+            
+            // beginConfiguration ensures that pending changes are not applied immediately
+            [self.session beginConfiguration];
+            
+            [self.session removeInput:input];
+            [self.session addInput:newInput];
+            
+            // Changes take effect once the outermost commitConfiguration is invoked.
+            [self.session commitConfiguration];
+            break;
+        }
+    } 
 }
 
 - (void)startRunning

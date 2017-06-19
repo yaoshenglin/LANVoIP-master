@@ -9,6 +9,7 @@
 #import "BNRMainVC.h"
 #import "BNRCommication.h"
 #import "BNRConnectVC.h"
+#import "CTB.h"
 
 @interface BNRMainVC ()
 
@@ -22,6 +23,8 @@
     self.title = @"主页";
     //self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"返回" style:UIBarButtonItemStylePlain target:self action:@selector(didReceiveMemoryWarning)];
     // Do any additional setup after loading the view.
+    
+    self.navigationItem.rightBarButtonItem = [CTB BarButtonWithTitle:@"测试" target:self tag:1];
 }
 
 - (void)didReceiveMemoryWarning
@@ -41,6 +44,17 @@
         vc.roleType = RoleTypeClient;
     }
     [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)ButtonEvents:(UIButton *)button
+{
+    if (button.tag == 1) {
+        //push to chat vc
+        UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        UIViewController *vc = [sb instantiateViewControllerWithIdentifier:@"chatrRoomVC"];
+        [vc setValue:@(RoleTypeSelf) forKey:@"roleType"];
+        [self.navigationController pushViewController:vc animated:YES];
+    }
 }
 
 /*

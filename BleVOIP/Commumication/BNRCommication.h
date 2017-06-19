@@ -13,6 +13,7 @@
 typedef NS_ENUM(NSInteger,RoleType) {
     RoleTypeHost,//主机
     RoleTypeClient,//代理或者客户端
+    RoleTypeSelf
 };
 #import <Foundation/Foundation.h>
 #import <MultipeerConnectivity/MultipeerConnectivity.h>

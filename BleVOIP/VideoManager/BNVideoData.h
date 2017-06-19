@@ -30,6 +30,8 @@
 
 - (void)setupCamera;
 
+- (void)swapFrontAndBackCameras;
+
 - (void)startRunning;
 - (void)stopRunning;
 

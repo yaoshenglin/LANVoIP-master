@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1423968F1EA6FB6E00ABAFCE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 1423968E1EA6FB6E00ABAFCE /* MBProgressHUD.m */; };
+		14501EF41EF776390030A45C /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14501EF31EF776390030A45C /* VideoToolbox.framework */; };
 		145CDE5F1EF5231700222D39 /* AAPLEAGLLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 145CDE5E1EF5231700222D39 /* AAPLEAGLLayer.m */; };
 		145CDE641EF52C6900222D39 /* H264HwEncoderImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 145CDE611EF52C6900222D39 /* H264HwEncoderImpl.m */; };
 		145CDE651EF52C6900222D39 /* H264HwDecoderImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 145CDE631EF52C6900222D39 /* H264HwDecoderImpl.m */; };
@@ -61,6 +62,7 @@
 /* Begin PBXFileReference section */
 		1423968D1EA6FB6E00ABAFCE /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		1423968E1EA6FB6E00ABAFCE /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		14501EF31EF776390030A45C /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		145CDE5D1EF5231700222D39 /* AAPLEAGLLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAPLEAGLLayer.h; sourceTree = "<group>"; };
 		145CDE5E1EF5231700222D39 /* AAPLEAGLLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAPLEAGLLayer.m; sourceTree = "<group>"; };
 		145CDE601EF52C6900222D39 /* H264HwEncoderImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = H264HwEncoderImpl.h; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				14501EF41EF776390030A45C /* VideoToolbox.framework in Frameworks */,
 				1BAD4DE41D2E3FE800E14ABE /* MultipeerConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -195,8 +198,8 @@
 				1BD3C63A1D0FD5D700F7246D /* BleVOIP */,
 				1BD3C6541D0FD5D700F7246D /* BleVOIPTests */,
 				1BD3C65F1D0FD5D700F7246D /* BleVOIPUITests */,
-				1BD3C6391D0FD5D700F7246D /* Products */,
 				427FF451B9785437D2539B2B /* Frameworks */,
+				1BD3C6391D0FD5D700F7246D /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -258,6 +261,7 @@
 		427FF451B9785437D2539B2B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				14501EF31EF776390030A45C /* VideoToolbox.framework */,
 				1BAD4DE31D2E3FE800E14ABE /* MultipeerConnectivity.framework */,
 			);
 			name = Frameworks;
